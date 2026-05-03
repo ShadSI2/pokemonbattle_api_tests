@@ -1,0 +1,118 @@
+stages:
+  - linters
+  - tests
+  - final
+
+# Запуск линтеров
+# Запуск flake8
+flake8:
+  allow_failure: true
+  stage: linters
+  image: python:3.14
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =="merge_request_event"'
+
+  before_script:
+    - python --version
+    - pip install --upgrade pip
+    - pip install flake8
+
+  script:
+    - echo "Запуск flake8"
+    - flake8 . > flake8-report.txt
+
+  artifacts:
+    when: always
+    paths:
+      - flake8-report.txt
+    expire_in: 7 days
+
+# Запуск pylint
+pylint:
+  allow_failure: true
+  stage: linters
+  image: python:3.14
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =="merge_request_event"'
+
+  before_script:
+    - python --version
+    - pip install --upgrade pip
+    - pip install pylint
+
+  script:
+    - echo "Запуск pylint"
+    - pylint .
+
+# Запуск ruff
+ruff:
+  allow_failure: true
+  stage: linters
+  image: python:3.14
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =="merge_request_event"'
+
+  before_script:
+    - python --version
+    - pip install --upgrade pip
+    - pip install ruff
+
+  script:
+    - echo "Запуск ruff"
+    - ruff check .
+
+# Запуск тестов
+tests:
+  stage: tests
+  image: python:3.14
+  rules:
+    - when: always
+
+  before_script:
+    - echo "Установка пакетов"
+    - apt-get update -y
+    - apt-get install -y --no-install-recommends default-jre-headless nodejs npm
+    - npm install -g allure --unsafe-perm=true
+
+    - echo "Установка зависимостей"
+    - pip install --upgrade pip
+    - pip install -r requirements.txt
+
+  script:
+    - |
+      set +e
+      echo "Запуск тестов с маркировкой api"
+      pytest -m api
+
+      status=$?
+      echo "Pytest exit code $status"
+
+      echo "Генерация отчёта"
+      allure awesome allure-results --single-file --output allure-report
+
+      exit $status
+
+  artifacts:
+    when: always
+    paths:
+      - allure-results
+      - allure-report
+    expire_in: 7 days
+
+# Запуск тестов из другого репозитория дочерним пайплайном
+e2e_tests:
+  stage: tests
+  rules:
+    - when: always
+  trigger:
+    project: python-auto-qa/workspaces/deymos/VCYLQ/pokemonbattle_e2e_tests
+    branch: main
+    strategy: depend
+
+final_job:
+  stage: final
+  script:
+    - echo "Пайплайн завершён"
+  when: manual
+  rules:
+    - when: always

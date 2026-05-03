@@ -1,0 +1,29 @@
+Заметки
+
+GIT
+git pull - подтянуть изменения из ветки
+git status - посмотреть статус изменений
+git add . - добавляет все файлы
+git commit -m "комментарий" - сохранить изменения с комментарием
+git push - внести изменения в гит
+git push --set-upstream origin название ветки - команду предлагает IDE после gin push
+
+PIP
+pip freeze > requirements.txt - сохранить названия расширений в файл
+pip install название расширения - установить расширение
+
+VENV
+python -m venv .venv  - создание виртуального окружения
+.venv\Scripts\Activate.ps1 - активация виртуального окружения
+
+PYTEST
+python -m pytest - для запуска всех тестов
+pytest название файла.py - для запуска всех тестов из определенного файла
+pytest -k название теста - запускает определенный тест через консоль
+pytest -v - для запуска с более расширенным отчетом
+python -m pytest -m smoke (где смоук нужное название метки. Лежат в pytest.ini). Для запуска тестов с маркировкой
+python -m pytest -v -m smoke - для запуска с подробным описанием тестов с маркировкой
+
+ALLURE
+allure serve allure-results - запуск отчета в браузере (allure-results - название директории)
+allure generate --clean --single-file allure-results - создание отчета в 1 файле

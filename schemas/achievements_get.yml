@@ -1,0 +1,18 @@
+type: object
+additionalProperties: false
+properties:
+  data:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      properties:
+        slug:
+          type: string
+        is_reached:
+          type: boolean
+      required:
+        - slug
+#        - is_reached
+required:
+  - data
